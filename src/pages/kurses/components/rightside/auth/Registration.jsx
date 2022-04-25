@@ -9,7 +9,7 @@ function Registration(props) {
 
     
 
-    const{users, setUsers} = useContext(UserContext)
+    const{users} = useContext(UserContext)
 
     const [newName, setNewName] = useState("")
     const [newSername, setNewSername] = useState("")
@@ -23,13 +23,13 @@ function Registration(props) {
     
     
 
-    useEffect(() => {
-        const getUsers = async () => {
-            const data = await getDocs(usersCollectionRef);
-            setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        }
-        getUsers();
-    }, []);
+    // useEffect(() => {
+    //     const getUsers = async () => {
+    //         const data = await getDocs(usersCollectionRef);
+    //         setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    //     }
+    //     getUsers();
+    // }, []);
     
 
     const register = async () => {

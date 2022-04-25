@@ -2,9 +2,9 @@ import Curses from "./Curses"
 import Nav from "./Nav"
 
 function CenterSide(){
-
-    return<div id="journal-scroll" className="flex flex-col p-5 space-y-5 h-[40rem] overflow-y-scroll ">
-        <div>
+    // h-[40rem]
+    return<div id="journal-scroll" className=" space-y-5 overflow-y-scroll  relative h-[40rem] rounded-2xl">
+        <div className={" "}>
             <Nav/>
         </div>
         <div>

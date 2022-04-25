@@ -9,30 +9,24 @@ import cap from "../../../../content/premium-icon-cap-4919658.png"
 import feedback from "../../../../content/premium-icon-feedback-4596415.png"
 import {Box} from "@mui/material";
 import {getDocs} from "firebase/firestore";
+import {clear} from "@testing-library/user-event/dist/clear";
 
 function Switch2D3D() {
 
     const {filter, setFilter} = useContext(FilterContext)
 
-    const [isSwitched, setIsSwitched] = useState(true)
-
     function addFilter() {
-        setIsSwitched(!isSwitched)
-        isSwitched ? setFilter({...filter, type: "3D"}) : setFilter({...filter, type: "2D"})
+        if(filter.type===""){
+            setFilter({...filter, type: "3D"})
+        }
+        else if(filter.type==="3D"){
+            setFilter({...filter, type: "2D"})
+        }
+        else if(filter.type==="2D"){
+            setFilter({...filter, type: "3D"})
+        }
 
     }
-
-    // useEffect(()=>{
-    //     const data = localStorage.getItem('switch')
-    //     console.log(JSON.parse(data))
-    //     if(data){
-    //         setIsSwitched(JSON.parse(data))
-    //     }
-    // })
-    //
-    // useEffect(()=>{
-    //     localStorage.setItem('switch', JSON.stringify(isSwitched))
-    // },[isSwitched])
 
     return <div className=" flex flex-row justify-center mb-8 ">
         <button onClick={() => addFilter()}
@@ -44,7 +38,7 @@ function Switch2D3D() {
                 3D
             </div>
             <div
-                className={isSwitched ? "bg-[#4361ee] rounded-xl transition ease-in-out duration-200 -translate-x-1/2  h-full w-1/2  absolute inset-y-0  z-0" :
+                className={filter.type==="2D"||filter.type==="" ? "bg-[#4361ee] rounded-xl transition ease-in-out duration-200 -translate-x-1/2  h-full w-1/2  absolute inset-y-0  z-0" :
                     "absolute transition ease-in-out duration-200 translate-x-1/2  inset-y-0  z-0 bg-[#4361ee] h-full w-1/2 rounded-xl  "}>
             </div>
         </button>
@@ -59,10 +53,7 @@ function valuetext(value) {
 }
 
 function MinimumDistanceSlider() {
-    const [value1, setValue1] = React.useState([20000, 360000]);
     const {filter, setFilter} = useContext(FilterContext)
-
-
 
     const handleChange1 = (event, newValue, activeThumb) => {
         if (!Array.isArray(newValue)) {
@@ -70,22 +61,19 @@ function MinimumDistanceSlider() {
         }
 
         if (activeThumb === 0) {
-            setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
-            setFilter({...filter, cost:value1})
+            // setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
+            setFilter({...filter, cost:[Math.min(newValue[0], filter.cost[1] - minDistance), filter.cost[1]]})
         } else {
-            setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
-            setFilter({...filter, cost:value1})
+            // setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
+            setFilter({...filter, cost:[filter.cost[0], Math.max(newValue[1], filter.cost[0] + minDistance)]})
 
         }
     };
 
-
-
-
     return (
         <Slider
             getAriaLabel={() => 'Minimum distance'}
-            value={value1}
+            value={filter.cost}
             sx={{
                 color: '#4361ee',
                 height: 3,
@@ -134,30 +122,12 @@ function Price() {
 }
 
 function Duration() {
-    const [back1, setBack1] = useState(false)
-    const [back2, setBack2] = useState(false)
-    const [back3, setBack3] = useState(false)
-    const [back4, setBack4] = useState(false)
     const {filter, setFilter} = useContext(FilterContext)
     let {duration} = filter;
 
     function addFilter(value) {
         duration.includes(value) ? duration = duration.filter(x => x !== value) : duration.push(value)
         setFilter({...filter, duration})
-        switch (value) {
-            case "месяц":
-                setBack1(!back1)
-                break
-            case "пол года":
-                setBack2(!back2)
-                break
-            case "год":
-                setBack3(!back3)
-                break
-            case "2 года":
-                setBack4(!back4)
-                break
-        }
     }
 
     return <div className='flex flex-col space-y-2 text-xs font-medium'>
@@ -169,19 +139,19 @@ function Duration() {
         </div>
         <div className='grid grid-cols-2 gap-x-1 gap-y-1 '>
             <button onClick={() => addFilter("месяц")}
-                    className={back1 ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
+                    className={filter.duration.includes("месяц") ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
                 до месяца
             </button>
             <button onClick={() => addFilter("пол года")}
-                    className={back2 ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
+                    className={filter.duration.includes("пол года") ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
                 до полу года
             </button>
             <button onClick={() => addFilter("год")}
-                    className={back3 ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
+                    className={filter.duration.includes("год") ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
                 до года
             </button>
             <button onClick={() => addFilter("2 года")}
-                    className={back4 ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
+                    className={filter.duration.includes("2 года") ? 'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium' : 'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium'}>
                 до 2 лет
             </button>
 
@@ -213,25 +183,11 @@ function FeedBack() {
 
 function Education() {
 
-    const [back1, setBack1] = useState(false)
-    const [back2, setBack2] = useState(false)
-    const [back3, setBack3] = useState(false)
     const {filter, setFilter} = useContext(FilterContext)
     let {professionalism} = filter;
     function addFilter(value) {
         professionalism.includes(value) ? professionalism = professionalism.filter(x => x !== value) : professionalism.push(value)
         setFilter({...filter, professionalism})
-        switch (value) {
-            case "Новичек":
-                setBack1(!back1)
-                break
-            case "Продвинутый":
-                setBack2(!back2)
-                break
-            case "Профессионал":
-                setBack3(!back3)
-                break
-        }
     }
 
     return <div className='flex flex-col '>
@@ -241,15 +197,15 @@ function Education() {
                 Уровень подготовки
             </div>
         </div>
-        <button onClick={() => addFilter("Новичек")} className={back1?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium ':'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium '}>
+        <button onClick={() => addFilter("Новичек")} className={filter.professionalism.includes("Новичек")?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium ':'bg-[#e2eefe] rounded-xl text-xs py-[0.3rem] font-medium '}>
             Новичек
         </button>
         <div className='flex flex-row space-x-1 grow mt-1  '>
 
-            <button onClick={() => addFilter("Продвинутый")} className={back2?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium px-1.5':'bg-[#e2eefe] px-1.5 rounded-xl text-xs py-[0.3rem] font-medium '}>
+            <button onClick={() => addFilter("Продвинутый")} className={filter.professionalism.includes("Продвинутый")?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium px-1.5':'bg-[#e2eefe] px-1.5 rounded-xl text-xs py-[0.3rem] font-medium '}>
                 Продвинутый
             </button>
-            <button onClick={() => addFilter("Профессионал")} className={back3?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium px-1.5':'bg-[#e2eefe] px-1.5 rounded-xl text-xs py-[0.3rem] font-medium '}>
+            <button onClick={() => addFilter("Профессионал")} className={filter.professionalism.includes("Профессионал")?'bg-blue-200 rounded-xl text-xs py-[0.3rem] font-medium px-1.5':'bg-[#e2eefe] px-1.5 rounded-xl text-xs py-[0.3rem] font-medium '}>
                 Профессионал
             </button>
         </div>
@@ -257,27 +213,12 @@ function Education() {
 }
 
 function LeftSide() {
-
     const {filter, setFilter} = useContext(FilterContext)
-    const [person, setPerson] = useState(false)
-    const [plane, setPlane] = useState(false)
-    const [lightColor, setLightColor] = useState(false)
 
-    function addPerson(){
-        setPerson(!person)
-        setFilter({...filter, designPerson:!person})
-    }
-    function addPlane(){
-        setPlane(!plane)
-        setFilter({...filter, designPlane:!plane})
-    }
-    function addLightColor(){
-        setLightColor(!lightColor)
-        setFilter({...filter, lightColor:!lightColor})
-    }
     function resetFilter(){
         setFilter({type:"", duration: [], cost:[10000,360000], professionalism:[],designPerson:false,designPlane:false,lightColor:false })
     }
+
     return <div className="flex flex-row justify-center h-full mx-6 ">
         <div className="flex flex-col space-y-5 self-center grow ">
             <div>
@@ -300,19 +241,19 @@ function LeftSide() {
                     <div>
                         Дизайн персонажа
                     </div>
-                    <input onChange={()=>addPerson()} type="checkbox" id="horns" name="horns" className='self-center'/>
+                    <input onChange={()=>setFilter({...filter, designPerson:!filter.designPerson})} checked={filter.designPerson} type="checkbox" id="horns" name="horns" className='self-center'/>
                 </div>
                 <div className='flex flex-row justify-between'>
                     <div>
                         Дизайн окружения
                     </div>
-                    <input onChange={()=>addPlane()} type="checkbox" id="horns" name="horns" className='self-center'/>
+                    <input onChange={()=>setFilter({...filter, designPlane:!filter.designPlane})} checked={filter.designPlane}  type="checkbox" id="horns" name="horns" className='self-center'/>
                 </div>
                 <div className='flex flex-row justify-between'>
                     <div>
                         Свет и цвет
                     </div>
-                    <input onChange={()=>addLightColor()} type="checkbox" id="horns" name="horns" className='self-center'/>
+                    <input onChange={()=>setFilter({...filter, lightColor:!filter.lightColor})} checked={filter.lightColor} type="checkbox" id="horns" name="horns" className='self-center'/>
                 </div>
             </div>
             <button onClick={()=>resetFilter()} className='w-full p-1 py-2 bg-[#4361ee] text-white rounded-xl text-xs font-medium'>

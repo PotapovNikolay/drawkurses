@@ -5,7 +5,7 @@ function Nav() {
 
     const {visibleLeftSide,setVisibleLeftSide, visibleRightSide,setVisibleRightSide } = useContext(GridContext)
 
-    return <div className="flex flex-row sticky top-0">
+    return <div className=" flex flex-row p-5  bg-blue-100 rounded-t-2xl">
         <div className="grow text-3xl font-montserrat font-semibold pl-10 ">
             Все курсы
         </div>

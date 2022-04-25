@@ -1,27 +1,30 @@
-function ActiveCurses(){
+import {collection, getDoc, getDocs} from "firebase/firestore";
+import {db} from "../../../../FireBaseConfig";
+import {useContext, useEffect, useState} from "react";
+import {CursesContext, DataBaseContext, UserContext} from "../../../../context/GridContext";
 
-    return<div className="flex flex-col space-y-5">
+function ActiveCurses() {
+
+    const {users, user} = useContext(UserContext)
+    const {curses, favorite} = useContext(DataBaseContext)
+    const [favCurses, setFavCurses] = useState([])
+
+    const favoriteCollectionRef = collection(db, "favorite")
+
+    const currentUser = users.find(x => x.Email === user.email)
+    const favoriteCurses = favorite.filter(x => x.User === currentUser.id).map((item) => item.Curs)
+
+
+    return <div className="flex flex-col space-y-5">
         <div className="text-2xl font-medium">
             Добавленные курсы
         </div>
         <div className="flex flex-col space-y-4">
-            <div className="flex flex-row space-x-4">
-                <div className="bg-blue-100 w-14 h-10 rounded-xl ">
 
-                </div>
-                <div className="font-medium text-sm">
-                    flat иллюстрация или искусство web-дизайна
-                </div>
-            </div>
+            {curses.filter(x => favoriteCurses.includes(x.id)).map((item, index) => {
+                return <div key={index}>{item.name}</div>
+            })}
 
-            <div className="flex flex-row space-x-4">
-                <div className="bg-blue-100 w-14 h-10 rounded-xl ">
-
-                </div>
-                <div className="font-medium text-sm">
-                    flat иллюстрация или искусство web-дизайна
-                </div>
-            </div>
         </div>
     </div>
 }

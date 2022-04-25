@@ -3,7 +3,7 @@ import next from "../../../../content/next.png"
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth, db } from "../../../../FireBaseConfig"
 import { collection, getDocs, addDoc } from "firebase/firestore"
-import { UserContext } from "../../../../context/GridContext"
+import {CursesContext, DataBaseContext, UserContext} from "../../../../context/GridContext"
 
 function Profile() {
 
@@ -32,23 +32,15 @@ function Profile() {
         
     // }
 
+    const dataCollectionRef = collection(db, "curses");
     const usersCollectionRef = collection(db, "users");
 
     const{users, setUsers, user, setUser} = useContext(UserContext)
-
-    useEffect(() => {
-        const getUsers = async () => {
-            const data = await getDocs(usersCollectionRef);
-            setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        }
-        getUsers();
-    }, []);
+    const { curses} = useContext(DataBaseContext)
 
     const logout = async () => {
         await signOut(auth)
     }
-
-    
 
     return <div className="flex flex-row justify-between ">
         <button className="border border-black rounded-lg p-[0.2rem] self-center">
@@ -65,8 +57,6 @@ function Profile() {
                             <div>
                                 {u.Sername}
                             </div>
-                            {/* {u.Email}
-                            {u.id} */}
                         </div>
                     }
                 })}
