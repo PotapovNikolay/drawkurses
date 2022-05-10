@@ -9,12 +9,15 @@
   />
   <title>React App</title>
   <style>
+    body{
+      overflow-x: hidden
+    }
     .no-cursor {
       cursor: none;
       background-color: wheat;
     }
     #journal-scroll::-webkit-scrollbar {
-      width: 0px;
+      width: 8px;
       cursor: pointer;
       background-color: rgba(229, 231, 235, var(--bg-opacity));
 
@@ -32,10 +35,10 @@
   </style>
 </head>
 
-<body>
+<body id="journal-scroll">
 
 <noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root" class=""></div>
+<div id="root"></div>
 
 </body>
 </html>

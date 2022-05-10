@@ -3,11 +3,11 @@ import Nav from "./Nav"
 
 function CenterSide(){
     // h-[40rem]
-    return<div id="journal-scroll" className=" space-y-5 overflow-y-scroll  relative h-[40rem] rounded-2xl">
-        <div className={" "}>
+    return<div className=" space-y-5    rounded-2xl pb-5">
+        <div className={" sticky top-0 z-50"}>
             <Nav/>
         </div>
-        <div>
+        <div className={'relative'} >
             <Curses/>
         </div>
     </div>

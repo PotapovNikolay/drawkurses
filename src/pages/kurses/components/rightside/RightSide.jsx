@@ -13,7 +13,7 @@ function RightSide() {
 
 
 
-    return <div className="flex flex-col mx-6 mt-3 space-y-10">
+    return <div className="flex flex-col mx-6 mt-3 space-y-10 ">
         {user ? <div>
             <Profile />
         </div> :

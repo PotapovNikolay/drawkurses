@@ -1,15 +1,11 @@
 import React, {useState, useContext, useEffect} from 'react'
 import Slider from '@mui/material/Slider';
-import {alpha, styled} from '@mui/material/styles';
 import {FilterContext} from "../../../../context/GridContext"
 
 import price from "../../../../content/free-icon-ruble-1868089.png"
 import time from "../../../../content/free-icon-time-6682770.png"
 import cap from "../../../../content/premium-icon-cap-4919658.png"
 import feedback from "../../../../content/premium-icon-feedback-4596415.png"
-import {Box} from "@mui/material";
-import {getDocs} from "firebase/firestore";
-import {clear} from "@testing-library/user-event/dist/clear";
 
 function Switch2D3D() {
 

@@ -1,7 +1,8 @@
-import { useState, useEffect, useContext } from "react"
-import { auth, db } from "../../../../FireBaseConfig"
-import {collection, getDocs, addDoc, doc, updateDoc} from "firebase/firestore"
-import {CursesContext, DataBaseContext, FilterContext, GridContext, UserContext} from "../../../../context/GridContext"
+import {useState, useEffect, useContext} from "react"
+import {auth, db} from "../../../../FireBaseConfig"
+import {collection, getDocs, addDoc, doc, updateDoc, deleteDoc} from "firebase/firestore"
+import tick from "../../../../content/tick-svgrepo-com.svg"
+import {DataBaseContext, FilterContext, GridContext, UserContext} from "../../../../context/GridContext"
 
 function Curses() {
 
@@ -259,86 +260,107 @@ function Curses() {
     //         "pic": ""
     //     }
     // ]
-    const {filter, setFilter} = useContext(FilterContext)
-    const { curses, favorite } = useContext(DataBaseContext)
-    const{users,  user, favCurses, setFavCurses} = useContext(UserContext)
-    const { visibleLeftSide, setVisibleLeftSide, visibleRightSide, setVisibleRightSide } = useContext(GridContext)
-    const favoriteCollectionRef = collection(db,"favorite")
+    const {filter} = useContext(FilterContext)
+    const {curses, favorite, updateDB, setUpdateDB} = useContext(DataBaseContext)
+    const {users, user} = useContext(UserContext)
+    const {visibleLeftSide, visibleRightSide,} = useContext(GridContext)
+    const favoriteCollectionRef = collection(db, "favorite")
+    const [isFav, setIsFavorite] = useState([""])
 
-    const addCursForUser = async (cursid)=>{
-        const currentUser = users.find(x=>x.Email===user.email)
+    useEffect(() => {
+        const data = localStorage.getItem('fav')
+        if (data) {
+            setIsFavorite(JSON.parse(data))
+        }
 
-        setFavCurses(!favCurses)
-        await addDoc(favoriteCollectionRef, {Curs:cursid, User:currentUser.id})
+    }, [])
+
+    useEffect(() => {
+
+        localStorage.setItem('fav', JSON.stringify(isFav))
+    }, [isFav])
+
+    const currentUser = user?users.find(x => x.Email === user.email):null
+
+
+    const addCursForUser = async (cursid) => {
+
+        const res = favorite.filter(x => x.User === currentUser.id).map(x => x.Curs)
+
+        if (favorite.filter(x => x.User === currentUser.id).map(x => x.Curs).includes(cursid)) {
+            const favDoc = doc(db, "favorite", favorite.find(x => x.Curs === cursid).id)
+            setUpdateDB(!updateDB)
+            await deleteDoc(favDoc)
+        } else {
+            setUpdateDB(!updateDB)
+            await addDoc(favoriteCollectionRef, {Curs: cursid, User: currentUser.id})
+        }
+
     }
-    console.log(favorite.filter(x=>x.User))
-    return <div className={visibleLeftSide & visibleRightSide ?"grid grid-cols-2 gap-3 px-5":"grid grid-cols-3 gap-3 px-5"}>
-        {curses.filter(function (item){
 
-            if(filter.type==="")
-            {
+    return <div
+        className={visibleLeftSide & visibleRightSide ? "grid grid-cols-2 gap-3 px-5" : "grid grid-cols-3 gap-3 px-5"}>
+        {curses.filter(function (item) {
+
+            if (filter.type === "") {
                 return item
-            }
-            else if(filter.type===item.type) {
+            } else if (filter.type === item.type) {
                 return item
             }
 
-        }).filter(function (item){
-            if (parseInt(item.cost.replace(/\s+/g, ''))>filter.cost[0] && parseInt(item.cost.replace(/\s+/g, '')) < filter.cost[1]){
+        }).filter(function (item) {
+            if (parseInt(item.cost.replace(/\s+/g, '')) > filter.cost[0] && parseInt(item.cost.replace(/\s+/g, '')) < filter.cost[1]) {
                 return item
             }
-        }).filter(function (item){
-            if (filter.duration.length==0){
-                return item
-            }
-            else if((filter.duration.includes("месяц")
-                && (item.duration.includes("недел") || (item.duration.includes("месяц") && parseFloat(item.duration)<1.5)))
 
-                ||(filter.duration.includes("пол года") && (item.duration.includes("месяц") && parseFloat(item.duration)<6.0))
+        }).filter(function (item) {
+            if (filter.duration.length == 0) {
+                return item
+            } else if ((filter.duration.includes("месяц")
+                    && (item.duration.includes("недел") || (item.duration.includes("месяц") && parseFloat(item.duration) < 1.5)))
 
-            ||(filter.duration.includes("год") && (item.duration.includes("месяц") && parseFloat(item.duration)<12.0) )
+                || (filter.duration.includes("пол года") && (item.duration.includes("месяц") && parseFloat(item.duration) < 6.0))
 
-                ||(filter.duration.includes("2 года") && (item.duration.includes("месяц") && parseFloat(item.duration)<30.0))){
-                return item
-            }
-        }).filter(function (item){
-            if (filter.professionalism.length===0){
-                return item
-            }
-            else if(filter.professionalism.includes(item.professionalism)){
-                return item
-            }
-        }).filter(function (item){
-            if(filter.designPerson===false){
-                return item
-            }
-            else if(item.name.includes("ерсон") && filter.designPerson===true){
-                return item
-            }
-        }).filter(function (item){
-            if(filter.designPlane===false){
-                return item
-            }
-            else if(item.name.includes("окруж") && filter.designPlane===true){
-                return item
-            }
-        }).filter(function (item){
-            if(filter.lightColor===false){
-                return item
-            }
-            else if(item.name.includes("свет") && filter.lightColor===true){
-                return item
-            }
-        }).map((curs,index) => {
+                || (filter.duration.includes("год") && (item.duration.includes("месяц") && parseFloat(item.duration) < 12.0))
 
-            return <div key={index} style={{backgroundColor:curs.backcolor}} className={'rounded-xl  text-white relative px-8'} >
-                
+                || (filter.duration.includes("2 года") && (item.duration.includes("месяц") && parseFloat(item.duration) < 30.0))) {
+                return item
+            }
+        }).filter(function (item) {
+            if (filter.professionalism.length === 0) {
+                return item
+            } else if (filter.professionalism.includes(item.professionalism)) {
+                return item
+            }
+        }).filter(function (item) {
+            if (filter.designPerson === false) {
+                return item
+            } else if (item.name.includes("ерсон") && filter.designPerson === true) {
+                return item
+            }
+        }).filter(function (item) {
+            if (filter.designPlane === false) {
+                return item
+            } else if (item.name.includes("окруж") && filter.designPlane === true) {
+                return item
+            }
+        }).filter(function (item) {
+            if (filter.lightColor === false) {
+                return item
+            } else if (item.name.includes("свет") && filter.lightColor === true) {
+                return item
+            }
+        }).map((curs, index) => {
+
+            return <div key={index} style={{backgroundColor: curs.backcolor}}
+                        className={'rounded-xl  text-white flex flex-col relative bg-red-200 px-8 justify-between '}>
+
                 <div className="flex flex-row justify-start py-5 items-center space-x-5">
                     <div className="">
-                        <img src={curs.pic} alt=" " className="w-10 h-10" />
+                        <img src={curs.pic} alt=" " className="w-10 h-10"/>
                     </div>
                     <div className="flex flex-row justify-between grow self-start text-sm">
-                        <div className="flex flex-col  grow">
+                        <div className="flex flex-col  basis-11/12">
                             <div className="font-medium text-lg mb-3">{curs.name}</div>
                             <div className="flex flex-row justify-between ">
                                 <div>Школа</div>
@@ -353,18 +375,25 @@ function Curses() {
                                 <div>{curs.cost} Р</div>
                             </div>
                         </div>
-                        
-                        <button onClick={()=>addCursForUser(curs.id)} style={{ color: curs.backcolor}} className="bg-white rounded-xl h-8 w-8 text-3xl font-semibold relative">
-                            +
-                    </button>
+                        {currentUser?favorite.filter(x => x.User === currentUser.id).map(x => x.Curs).includes(curs.id) ?
+                            <button onClick={() => addCursForUser(curs.id)} style={{color: curs.backcolor}}
+                                    className="disabled   bg-white rounded-xl h-8 w-8 text-2xl font-semibold">
+                                ✔
+                            </button> :
+                            <button onClick={() => addCursForUser(curs.id)} style={{color: curs.backcolor}}
+                                    className="bg-white basis-8 rounded-xl h-8  text-3xl font-semibold relative">
+                                +
+                            </button>:null}
                     </div>
-                    
-                </div>
-                <div className="  border-white border-b-2">
 
                 </div>
-                <div className="flex flex-row justify-center py-2">
-                    <a target="_blank" href={curs.url} >подробнее</a>
+                <div>
+                    <div className="  border-white border-b-2 ">
+
+                    </div>
+                    <div className="flex flex-row justify-center  py-2 ">
+                        <a target="_blank" href={curs.url}>Подробнее</a>
+                    </div>
                 </div>
             </div>
         })}

@@ -9,8 +9,9 @@ module.exports = {
         'montserrat': ['"Montserrat"', 'sans-serif']
       },
       animation:{
-        'centerside':'centerside ease-in-out 0.8s ',
+        'centersideleft':'centersideleft ease-in-out 0.8s ',
         'leftside':'leftside ease-in-out 0.8s ',
+        'rightside':'rightside ease-in-out 0.8s ',
       },
       keyframes: {
         leftside:{
@@ -18,9 +19,14 @@ module.exports = {
           '50%':{transform: 'translate(1rem,0px)'},
           '100%':{transform: 'translate(0px,0px)'}, 
         },
-        centerside:{
-          '0%':{transform: 'translate(-2rem,0px)'},   
+        rightside:{
+          '0%':{transform: 'translate(1.5rem,0px)'},
+          '50%':{transform: 'translate(-1rem,0px)'},
           '100%':{transform: 'translate(0px,0px)'},
+        },
+        centersideleft:{
+          '0%':{transform: 'scaleX(110%) translate(-10%,0px)'},
+          '100%':{transform: 'scaleX(100%)'},
         }
       },
     },

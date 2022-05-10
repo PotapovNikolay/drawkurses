@@ -3,7 +3,7 @@ import next from "../../../../content/next.png"
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth, db } from "../../../../FireBaseConfig"
 import { collection, getDocs, addDoc } from "firebase/firestore"
-import {CursesContext, DataBaseContext, UserContext} from "../../../../context/GridContext"
+import {CursesContext, DataBaseContext, GridContext, UserContext} from "../../../../context/GridContext"
 
 function Profile() {
 
@@ -32,8 +32,7 @@ function Profile() {
         
     // }
 
-    const dataCollectionRef = collection(db, "curses");
-    const usersCollectionRef = collection(db, "users");
+    const {visibleRightSide,setVisibleRightSide } = useContext(GridContext)
 
     const{users, setUsers, user, setUser} = useContext(UserContext)
     const { curses} = useContext(DataBaseContext)
@@ -42,11 +41,11 @@ function Profile() {
         await signOut(auth)
     }
 
-    return <div className="flex flex-row justify-between ">
-        <button className="border border-black rounded-lg p-[0.2rem] self-center">
-            <img src={next} className='rotate-180 w-5 h-5 '/>
-        </button>
-        <div className="flex flex-row space-x-2">
+    return <div className="flex flex-row justify-end ">
+        {/*<button  onClick={()=>{setVisibleRightSide(!visibleRightSide)}} className="border border-black rounded-lg p-[0.2rem] self-center">*/}
+        {/*    <img src={next} className='rotate-180 w-5 h-5 '/>*/}
+        {/*</button>*/}
+        <div className="flex flex-row space-x-2 ">
             <div className="flex flex-col text-lg">
                 {users.map((u,index)=>{
                     if(u.Email==user.email){
